@@ -14,7 +14,7 @@ The chapter is divided into two sections: chat and encryption. The former
 aims at explaining the logic behind the sending and receiving of messages
 amongst server and clients whilst the latter explains how data is encrypted.
 
-
+----
 ### Chat
 
 The following section has been further broken down into three parts. Each of
@@ -66,7 +66,7 @@ Both server and clients enter a loop state until going offline.
 In the event that a client disconnects from the server, the server removes it from the
 client pool so that no more data it sent to it.
 
-
+----
 ### Encryption
 
 Pending
