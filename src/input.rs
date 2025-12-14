@@ -3,6 +3,9 @@
 //! which contains no fields. The enum is used simply to
 //! make the import of the functionality more organised.
 
+use tokio::io::AsyncWriteExt;
+use tokio::net::tcp::OwnedWriteHalf;
+
 /// this enum contains no fields and is only used to organise
 /// the functionality under a category that makes importing
 /// cleaner
@@ -52,6 +55,36 @@ impl Input {
 
                 Some(message)
             }
+        }
+    }
+
+    /// this function contains the logic that enables the client to send
+    /// messages to the server. It calls [`Input::get_input`](fn@Input::get_input) to
+    /// retrieve user input and processes the result accordingly.
+    pub async fn send_message(mut writer: OwnedWriteHalf) {
+        println!("Chat ON || Entering '!Ex' will cause the client to disconnect");
+
+        loop {
+            let input = match Self::get_input(None).await {
+                None => continue,
+
+                Some(Self::Invalid(message)) => {
+                    eprintln!("{message}");
+                    continue;
+                }
+
+                Some(Self::Exit) => {
+                    println!("DISCONNECTING");
+                    return;
+                }
+
+                Some(Self::Valid(message)) => message,
+            };
+
+            if let Err(e) = writer.write_all(input.as_bytes()).await {
+                eprintln!("[-] FAILED TO SEND MESSAGE TO SERVER");
+                eprintln!("{e:?}");
+            };
         }
     }
 }
